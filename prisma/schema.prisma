@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String            @id @default(cuid())
+  name       String
+  email      String            @unique
+  password   String
+  role       String            @default("STUDENT") // "ADMIN" or "STUDENT"
+  nim        String?           // NIM or NIP (e.g. 21010101)
+  department String?           // e.g. Teknik Informatika, Sistem Informasi
+  phone      String?
+  avatar     String?
+  ktmImage   String?           // Foto Kartu Tanda Mahasiswa (KTM)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  loans      LoanTransaction[]
+  bookings   RoomBooking[]
+}
+
+model Equipment {
+  id                String            @id @default(cuid())
+  name              String
+  code              String            @unique // e.g. EQ-EL-001
+  description       String?
+  category          String            // e.g. Electronics, Computer & Network, Robotics, Physics, General
+  totalQuantity     Int               @default(1)
+  availableQuantity Int               @default(1)
+  condition         String            @default("GOOD") // "GOOD", "FAIR", "MAINTENANCE", "DAMAGED"
+  imageUrl          String?
+  location          String?           // e.g. Rak A-01, Lab IoT
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  loans             LoanTransaction[]
+}
+
+model LoanTransaction {
+  id               String      @id @default(cuid())
+  userId           String
+  equipmentId      String
+  quantity         Int         @default(1)
+  requestDate      DateTime    @default(now())
+  returnDate       DateTime
+  actualReturnDate DateTime?
+  status           String      @default("PENDING") // "PENDING", "APPROVED", "REJECTED", "RETURNED"
+  purpose          String
+  adminNote        String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  equipment        Equipment   @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+}
+
+model RoomBooking {
+  id            String      @id @default(cuid())
+  userId        String
+  roomName      String      // e.g. "Lab Komputer & AI", "Lab Elektronika & IoT", "Lab Multimedia"
+  startTime     DateTime
+  endTime       DateTime
+  purpose       String
+  status        String      @default("PENDING") // "PENDING", "APPROVED", "REJECTED", "CANCELLED", "COMPLETED"
+  isMaintenance Boolean     @default(false)
+  adminNote     String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

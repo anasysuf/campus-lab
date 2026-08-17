@@ -1,113 +1,231 @@
-import Image from "next/image";
+import React from 'react';
+import Link from 'next/link';
+import {
+  FlaskConical,
+  Boxes,
+  ClipboardCheck,
+  CalendarDays,
+  ShieldCheck,
+  GraduationCap,
+  ArrowRight,
+  Sparkles,
+  CheckCircle2,
+  Cpu,
+  Monitor,
+  Wifi,
+  Bot,
+  Tv,
+} from 'lucide-react';
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-sky-500 selection:text-white relative overflow-hidden">
+      {/* Background glowing gradients */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-sky-500/15 via-indigo-500/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25 group-hover:scale-105 transition">
+              <FlaskConical className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="font-extrabold text-lg tracking-tight text-white">
+                SIMLAB <span className="text-sky-400">KAMPUS</span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-medium">
+                Integrated Campus Lab System
+              </p>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition"
+            >
+              Masuk
+            </Link>
+            <Link
+              href="/register"
+              className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-md shadow-sky-500/20 active:scale-95 transition"
+            >
+              Daftar Mahasiswa
+            </Link>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+      {/* Hero Section */}
+      <main className="flex-1 flex flex-col">
+        <section className="relative px-6 pt-16 pb-20 max-w-6xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs font-bold text-sky-400 mb-6 shadow-sm">
+            <Sparkles className="w-4 h-4" />
+            <span>Sistem Informasi Manajemen Laboratorium Kampus Modern</span>
+          </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
+          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight sm:leading-tight">
+            Digitalisasi Inventaris, Peminjaman Alat, &amp; Reservasi Ruang Lab
+          </h1>
+
+          <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto mt-6 leading-relaxed">
+            Platform terpadu untuk koordinator lab dan mahasiswa. Kelola stok instrumen, verifikasi
+            peminjaman secara instan, serta jadwalkan penggunaan ruangan praktikum dengan transparan.
           </p>
-        </a>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+          {/* CTA Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/login"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-xl shadow-sky-500/25 active:scale-95 transition flex items-center justify-center gap-2"
+            >
+              <span>Mulai Masuk ke Portal</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <Link
+              href="/login"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-2xl font-bold text-sm text-slate-300 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 active:scale-95 transition flex items-center justify-center gap-2"
+            >
+              <ShieldCheck className="w-4 h-4 text-amber-400" />
+              <span>Demo Cepat Admin &amp; Mahasiswa</span>
+            </Link>
+          </div>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+          {/* Quick Demo Credentials Reminder Banner */}
+          <div className="mt-12 max-w-3xl mx-auto p-5 rounded-3xl bg-slate-900/90 border border-slate-800/80 shadow-xl text-left">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-400 mb-3">
+              <Sparkles className="w-4 h-4" />
+              <span>Akun Demo Siap Pakai (1-Click Login di Halaman Masuk)</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+                <div className="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Admin / Koordinator Lab</span>
+                </div>
+                <p className="text-xs text-slate-300 font-mono mt-1">
+                  Email: <strong className="text-white">admin@campus.ac.id</strong>
+                </p>
+                <p className="text-xs text-slate-300 font-mono">
+                  Password: <strong className="text-white">admin123</strong>
+                </p>
+              </div>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+                <div className="flex items-center gap-2 text-sky-400 font-bold text-xs">
+                  <GraduationCap className="w-4 h-4" />
+                  <span>Mahasiswa / Peminjam</span>
+                </div>
+                <p className="text-xs text-slate-300 font-mono mt-1">
+                  Email: <strong className="text-white">student@campus.ac.id</strong>
+                </p>
+                <p className="text-xs text-slate-300 font-mono">
+                  Password: <strong className="text-white">student123</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Cards Grid */}
+        <section className="px-6 py-16 bg-slate-900/50 border-t border-slate-800/80">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center max-w-xl mx-auto mb-12">
+              <h2 className="text-2xl sm:text-3xl font-black text-white">
+                Fitur Utama Sistem SIMLAB
+              </h2>
+              <p className="text-slate-400 text-xs sm:text-sm mt-2">
+                Dirancang khusus untuk mempermudah operasional lab perguruan tinggi
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Feature 1 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center mb-4">
+                  <Boxes className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Manajemen Inventaris Alat</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Katalog lengkap peralatan praktikum, pelacakan stok otomatis, kode barcode,
+                  kondisi fisik, dan rak penyimpanan terpadu.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4">
+                  <ClipboardCheck className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Logistik &amp; Persetujuan Pinjam</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Pengajuan pinjaman mandiri oleh mahasiswa dengan verifikasi instan dari admin lab,
+                  pemotongan stok real-time, dan pengingat jatuh tempo.
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4">
+                  <CalendarDays className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Reservasi Ruang &amp; Kalender</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Booking timeslot ruang lab komputer, elektronika, multimedia, dan penjadwalan
+                  blokir pemeliharaan preventif secara teratur.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Lab Facilities Showcase */}
+        <section className="px-6 py-16 max-w-6xl mx-auto w-full">
+          <div className="text-center max-w-xl mx-auto mb-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-white">
+              Fasilitas Laboratorium Terpadu
+            </h2>
+            <p className="text-slate-400 text-xs sm:text-sm mt-2">
+              Berbagai fasilitas lab yang dapat dipesan untuk kegiatan praktikum &amp; penelitian
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <Monitor className="w-6 h-6 text-sky-400 mx-auto mb-2" />
+              <h4 className="text-xs font-bold text-white">Lab Komputer &amp; AI</h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">40 Workstation</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <Cpu className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+              <h4 className="text-xs font-bold text-white">Lab Elektronika &amp; IoT</h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">30 Meja Praktikum</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <Tv className="w-6 h-6 text-purple-400 mx-auto mb-2" />
+              <h4 className="text-xs font-bold text-white">Lab Multimedia &amp; VR</h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">25 Unit Riset</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <Wifi className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
+              <h4 className="text-xs font-bold text-white">Lab Jaringan Server</h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">35 Workstation</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center">
+              <Bot className="w-6 h-6 text-rose-400 mx-auto mb-2" />
+              <h4 className="text-xs font-bold text-white">Lab Robotika</h4>
+              <p className="text-[10px] text-slate-400 mt-0.5">20 Meja Kerja</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950 py-8 px-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 SIMLAB KAMPUS - Sistem Informasi Manajemen Laboratorium. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }
