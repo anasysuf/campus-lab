@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/bookings - get lab bookings
 export async function GET(request: Request) {
   try {
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
     }
 
     if (roomName && roomName !== 'ALL') {
-      where.roomName = { contains: roomName };
+      where.roomName = { contains: roomName, mode: 'insensitive' };
     }
 
     if (status && status !== 'ALL') {

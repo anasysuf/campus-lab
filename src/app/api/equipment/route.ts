@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { generateAutoAssetCode } from '@/lib/barcode';
 
+export const dynamic = 'force-dynamic';
+
 // GET /api/equipment - list equipment with filters & search
 export async function GET(request: Request) {
   try {
@@ -17,10 +19,10 @@ export async function GET(request: Request) {
 
     if (search) {
       where.OR = [
-        { name: { contains: search } },
-        { code: { contains: search } },
-        { description: { contains: search } },
-        { location: { contains: search } },
+        { name: { contains: search, mode: 'insensitive' } },
+        { code: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
       ];
     }
 
