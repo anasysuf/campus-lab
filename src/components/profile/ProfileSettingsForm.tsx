@@ -393,7 +393,7 @@ export default function ProfileSettingsForm() {
           </div>
         )}
 
-        {/* Section 3: Security & Password Change */}
+        {/* Section 3: Security & Password Change (Disabled for Demo) */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-4">
             <div>
@@ -402,64 +402,22 @@ export default function ProfileSettingsForm() {
                 Ganti Kata Sandi (Password)
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Kosongkan bidang ini jika Anda tidak ingin mengubah password
+                Pengaturan keamanan akun login
               </p>
             </div>
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5">
+              <Lock className="w-3.5 h-3.5" />
+              Mode Demo Aktif
+            </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Kata Sandi Lama
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  value={formData.currentPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, currentPassword: e.target.value })
-                  }
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-sky-500 outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Kata Sandi Baru
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  value={formData.newPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, newPassword: e.target.value })
-                  }
-                  placeholder="Min. 6 karakter"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-sky-500 outline-none"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Ulangi Kata Sandi Baru
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  value={formData.confirmNewPassword}
-                  onChange={(e) =>
-                    setFormData({ ...formData, confirmNewPassword: e.target.value })
-                  }
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-sky-500 outline-none"
-                />
-              </div>
+          <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900 flex items-start gap-3">
+            <Lock className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-xs">
+              <p className="font-bold">Fitur Ganti Password Dinonaktifkan Sementara</p>
+              <p className="mt-0.5 text-amber-800 leading-relaxed">
+                Untuk menjaga aksesibilitas akun demo publik (<strong className="font-mono">admin@campus.ac.id</strong> &amp; <strong className="font-mono">student@campus.ac.id</strong>), fitur perubahan kata sandi dikunci sementara waktu.
+              </p>
             </div>
           </div>
         </div>

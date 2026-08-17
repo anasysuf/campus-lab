@@ -79,9 +79,7 @@ export async function PATCH(
     if (avatar !== undefined) data.avatar = avatar;
     if (ktmImage !== undefined) data.ktmImage = ktmImage;
 
-    if (newPassword && newPassword.length >= 6) {
-      data.password = await bcrypt.hash(newPassword, 10);
-    }
+    // Note: newPassword update is disabled in demo mode
 
     const updatedUser = await prisma.user.update({
       where: { id: params.id },

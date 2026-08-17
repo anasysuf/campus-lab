@@ -69,25 +69,12 @@ export async function PATCH(request: Request) {
     if (avatar !== undefined) updateData.avatar = avatar;
     if (ktmImage !== undefined) updateData.ktmImage = ktmImage;
 
-    // Handle password change if requested
+    // Password change is temporarily disabled in demo mode
     if (newPassword) {
-      if (!currentPassword) {
-        return NextResponse.json(
-          { error: 'Kata sandi saat ini (lama) wajib diisi untuk mengganti password.' },
-          { status: 400 }
-        );
-      }
-
-      const isCurrentValid = await bcrypt.compare(currentPassword, user.password);
-      if (!isCurrentValid) {
-        return NextResponse.json({ error: 'Kata sandi saat ini (lama) salah.' }, { status: 400 });
-      }
-
-      if (newPassword.length < 6) {
-        return NextResponse.json({ error: 'Kata sandi baru minimal 6 karakter.' }, { status: 400 });
-      }
-
-      updateData.password = await bcrypt.hash(newPassword, 10);
+      return NextResponse.json(
+        { error: 'Fitur ganti password dinonaktifkan sementara untuk keperluan demo publik.' },
+        { status: 403 }
+      );
     }
 
     const updated = await prisma.user.update({
