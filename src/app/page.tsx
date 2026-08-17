@@ -141,7 +141,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Feature 1 */}
               <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
                 <div className="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center mb-4">
@@ -149,32 +149,68 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-lg font-bold text-white">Manajemen Inventaris Alat</h3>
                 <p className="text-slate-400 text-xs leading-relaxed mt-2">
-                  Katalog lengkap peralatan praktikum, pelacakan stok otomatis, kode barcode,
+                  Katalog lengkap peralatan praktikum, pelacakan stok otomatis, penomoran kode unik,
                   kondisi fisik, dan rak penyimpanan terpadu.
                 </p>
               </div>
 
-              {/* Feature 2 */}
-              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4">
-                  <ClipboardCheck className="w-6 h-6" />
+              {/* Feature 2: Barcode Studio */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-4">
+                  <Sparkles className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-bold text-white">Logistik &amp; Persetujuan Pinjam</h3>
+                <h3 className="text-lg font-bold text-white">Studio Cetak Stiker Barcode</h3>
                 <p className="text-slate-400 text-xs leading-relaxed mt-2">
-                  Pengajuan pinjaman mandiri oleh mahasiswa dengan verifikasi instan dari admin lab,
-                  pemotongan stok real-time, dan pengingat jatuh tempo.
+                  Generator barcode Code-128 otomatis dan cetak label stiker fisik massal dalam
+                  format A4 Grid 10, A4 Grid 21 Tom &amp; Jerry, dan printer thermal roll.
                 </p>
               </div>
 
-              {/* Feature 3 */}
-              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-sky-500/50 transition">
+              {/* Feature 3: Semester Reports */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 transition">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-4">
+                  <ClipboardCheck className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Rekap &amp; Laporan Semester</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Audit sirkulasi peminjaman, tingkat kepatuhan pengembalian on-time, cetak PDF resmi
+                  ber-kop surat &amp; tanda tangan kepala lab, serta ekspor CSV.
+                </p>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center mb-4">
                   <CalendarDays className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold text-white">Reservasi Ruang &amp; Kalender</h3>
                 <p className="text-slate-400 text-xs leading-relaxed mt-2">
-                  Booking timeslot ruang lab komputer, elektronika, multimedia, dan penjadwalan
+                  Booking timeslot ruang lab komputer, IoT, multimedia, dan penjadwalan
                   blokir pemeliharaan preventif secara teratur.
+                </p>
+              </div>
+
+              {/* Feature 5 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-rose-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mb-4">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Verifikasi Identitas Resmi</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Pendaftaran mahasiswa dengan lampiran foto Kartu Identitas (KTM, KTP, atau SIM)
+                  dengan modal zoom HD untuk verifikasi pengambilan alat fisik.
+                </p>
+              </div>
+
+              {/* Feature 6 */}
+              <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 transition">
+                <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center mb-4">
+                  <GraduationCap className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white">Portal &amp; Profil Mandiri</h3>
+                <p className="text-slate-400 text-xs leading-relaxed mt-2">
+                  Portal khusus mahasiswa untuk cek riwayat pinjaman, ajukan peminjaman alat secara mandiri,
+                  dan kelola profil serta ganti password akun.
                 </p>
               </div>
             </div>
