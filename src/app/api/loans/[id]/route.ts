@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { sanitizeString } from '@/lib/security';
 
 // PATCH /api/loans/[id] - Update status (Approve, Reject, Return, Cancel)
 export async function PATCH(
@@ -28,6 +29,7 @@ export async function PATCH(
 
     const isAdmin = session.user.role === 'ADMIN';
     const isOwner = session.user.id === loan.userId;
+    const cleanAdminNote = adminNote ? sanitizeString(adminNote, 300) : null;
 
     if (action === 'CANCEL') {
       if (!isOwner && !isAdmin) {
@@ -41,7 +43,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           status: 'REJECTED',
-          adminNote: adminNote || 'Dibatalkan oleh peminjam.',
+          adminNote: cleanAdminNote || 'Dibatalkan oleh peminjam.',
         },
       });
 
@@ -80,7 +82,7 @@ export async function PATCH(
           where: { id: params.id },
           data: {
             status: 'APPROVED',
-            adminNote: adminNote || 'Pengajuan disetujui oleh Koordinator Lab.',
+            adminNote: cleanAdminNote || 'Pengajuan disetujui oleh Koordinator Lab.',
           },
           include: { equipment: true, user: true },
         }),
@@ -98,7 +100,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           status: 'REJECTED',
-          adminNote: adminNote || 'Pengajuan ditolak oleh Admin Lab.',
+          adminNote: cleanAdminNote || 'Pengajuan ditolak oleh Admin Lab.',
         },
         include: { equipment: true, user: true },
       });
@@ -126,7 +128,7 @@ export async function PATCH(
           data: {
             status: 'RETURNED',
             actualReturnDate: new Date(),
-            adminNote: adminNote || loan.adminNote || 'Alat telah dikembalikan dan diverifikasi.',
+            adminNote: cleanAdminNote || loan.adminNote || 'Alat telah dikembalikan dan diverifikasi.',
           },
           include: { equipment: true, user: true },
         }),

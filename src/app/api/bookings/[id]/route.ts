@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { sanitizeString } from '@/lib/security';
 
 // PATCH /api/bookings/[id] - Approve, Reject, Cancel
 export async function PATCH(
@@ -27,6 +28,7 @@ export async function PATCH(
 
     const isAdmin = session.user.role === 'ADMIN';
     const isOwner = session.user.id === booking.userId;
+    const cleanAdminNote = adminNote ? sanitizeString(adminNote, 300) : null;
 
     if (action === 'CANCEL') {
       if (!isOwner && !isAdmin) {
@@ -37,7 +39,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           status: 'CANCELLED',
-          adminNote: adminNote || 'Dibatalkan oleh pemesan.',
+          adminNote: cleanAdminNote || 'Dibatalkan oleh pemesan.',
         },
       });
 
@@ -53,7 +55,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           status: 'APPROVED',
-          adminNote: adminNote || 'Pemesanan ruangan disetujui.',
+          adminNote: cleanAdminNote || 'Pemesanan ruangan disetujui.',
         },
       });
       return NextResponse.json(updated);
@@ -64,7 +66,7 @@ export async function PATCH(
         where: { id: params.id },
         data: {
           status: 'REJECTED',
-          adminNote: adminNote || 'Pemesanan ruangan ditolak karena jadwal bentrok/ruang tidak dapat digunakan.',
+          adminNote: cleanAdminNote || 'Pemesanan ruangan ditolak karena jadwal bentrok/ruang tidak dapat digunakan.',
         },
       });
       return NextResponse.json(updated);

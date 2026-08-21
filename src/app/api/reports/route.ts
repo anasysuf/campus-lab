@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { sanitizeString } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,8 +15,8 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const academicYear = searchParams.get('year') || '2025/2026';
-    const semester = searchParams.get('semester') || 'GENAP'; // 'GANJIL', 'GENAP', 'ALL'
+    const academicYear = sanitizeString(searchParams.get('year') || '2025/2026', 20);
+    const semester = sanitizeString(searchParams.get('semester') || 'GENAP', 10); // 'GANJIL', 'GENAP', 'ALL'
 
     // Determine Date Ranges for Semester
     // Ganjil: 1 Sep - 28/29 Feb

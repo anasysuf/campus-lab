@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { isValidCondition, isValidImageUrl, sanitizeString } from '@/lib/security';
 
 // GET /api/equipment/[id]
 export async function GET(
@@ -57,10 +58,12 @@ export async function PUT(
       return NextResponse.json({ error: 'Peralatan tidak ditemukan' }, { status: 404 });
     }
 
+    const cleanCode = code ? sanitizeString(code, 50).toUpperCase() : existing.code;
+
     // Check code uniqueness if changed
-    if (code && code.toUpperCase() !== existing.code) {
+    if (cleanCode && cleanCode !== existing.code) {
       const codeExists = await prisma.equipment.findUnique({
-        where: { code: code.toUpperCase() },
+        where: { code: cleanCode },
       });
       if (codeExists) {
         return NextResponse.json({ error: 'Kode inventaris sudah digunakan.' }, { status: 409 });
@@ -70,15 +73,15 @@ export async function PUT(
     const updated = await prisma.equipment.update({
       where: { id: params.id },
       data: {
-        name: name !== undefined ? name : existing.name,
-        code: code !== undefined ? code.toUpperCase() : existing.code,
-        category: category !== undefined ? category : existing.category,
-        description: description !== undefined ? description : existing.description,
-        totalQuantity: totalQuantity !== undefined ? parseInt(totalQuantity, 10) : existing.totalQuantity,
-        availableQuantity: availableQuantity !== undefined ? parseInt(availableQuantity, 10) : existing.availableQuantity,
-        condition: condition !== undefined ? condition : existing.condition,
-        location: location !== undefined ? location : existing.location,
-        imageUrl: imageUrl !== undefined ? imageUrl : existing.imageUrl,
+        name: name !== undefined ? sanitizeString(name, 150) : existing.name,
+        code: cleanCode,
+        category: category !== undefined ? sanitizeString(category, 80) : existing.category,
+        description: description !== undefined ? (description ? sanitizeString(description, 1000) : null) : existing.description,
+        totalQuantity: totalQuantity !== undefined ? Math.max(1, parseInt(totalQuantity, 10)) : existing.totalQuantity,
+        availableQuantity: availableQuantity !== undefined ? Math.max(0, parseInt(availableQuantity, 10)) : existing.availableQuantity,
+        condition: condition !== undefined && isValidCondition(condition) ? condition : existing.condition,
+        location: location !== undefined ? (location ? sanitizeString(location, 100) : null) : existing.location,
+        imageUrl: imageUrl !== undefined ? (imageUrl && isValidImageUrl(imageUrl) ? imageUrl : null) : existing.imageUrl,
       },
     });
 

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { isValidEmail, isValidImageUrl, isValidRole, sanitizeString } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const search = searchParams.get('search') || '';
+    const search = sanitizeString(searchParams.get('search') || '', 100);
     const role = searchParams.get('role') || '';
     const department = searchParams.get('department') || '';
 
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
       ];
     }
 
-    if (role && role !== 'ALL') {
+    if (role && role !== 'ALL' && isValidRole(role)) {
       where.role = role;
     }
 
@@ -95,6 +96,29 @@ export async function POST(request: Request) {
     }
 
     const cleanEmail = email.toLowerCase().trim();
+    if (!isValidEmail(cleanEmail)) {
+      return NextResponse.json({ error: 'Format email tidak valid.' }, { status: 400 });
+    }
+
+    if (typeof password !== 'string' || password.length < 6) {
+      return NextResponse.json({ error: 'Password minimal harus 6 karakter.' }, { status: 400 });
+    }
+
+    const cleanRole = isValidRole(role) ? role : 'STUDENT';
+    const cleanName = sanitizeString(name, 100);
+    const cleanNim = nim ? sanitizeString(nim, 30) : null;
+    const cleanDepartment = department ? sanitizeString(department, 100) : null;
+    const cleanPhone = phone ? sanitizeString(phone, 25) : null;
+
+    let cleanAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`;
+    if (avatar && isValidImageUrl(avatar)) {
+      cleanAvatar = avatar;
+    }
+
+    let cleanKtmImage: string | null = null;
+    if (ktmImage && isValidImageUrl(ktmImage)) {
+      cleanKtmImage = ktmImage;
+    }
 
     const existing = await prisma.user.findUnique({
       where: { email: cleanEmail },
@@ -108,15 +132,15 @@ export async function POST(request: Request) {
 
     const newUser = await prisma.user.create({
       data: {
-        name,
+        name: cleanName,
         email: cleanEmail,
         password: hashedPassword,
-        role,
-        nim: nim || null,
-        department: department || null,
-        phone: phone || null,
-        avatar: avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`,
-        ktmImage: ktmImage || null,
+        role: cleanRole,
+        nim: cleanNim,
+        department: cleanDepartment,
+        phone: cleanPhone,
+        avatar: cleanAvatar,
+        ktmImage: cleanKtmImage,
       },
       select: {
         id: true,

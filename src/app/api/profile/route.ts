@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { isValidImageUrl, sanitizeString } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,7 +42,7 @@ export async function GET() {
   }
 }
 
-// PATCH /api/profile - Update own profile and change password
+// PATCH /api/profile - Update own profile
 export async function PATCH(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -51,7 +51,7 @@ export async function PATCH(request: Request) {
     }
 
     const body = await request.json();
-    const { name, phone, department, avatar, ktmImage, currentPassword, newPassword } = body;
+    const { name, phone, department, avatar, ktmImage, newPassword } = body;
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -63,11 +63,25 @@ export async function PATCH(request: Request) {
 
     const updateData: any = {};
 
-    if (name) updateData.name = name.trim();
-    if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
-    if (department !== undefined) updateData.department = department ? department.trim() : null;
-    if (avatar !== undefined) updateData.avatar = avatar;
-    if (ktmImage !== undefined) updateData.ktmImage = ktmImage;
+    if (name) updateData.name = sanitizeString(name, 100);
+    if (phone !== undefined) updateData.phone = phone ? sanitizeString(phone, 25) : null;
+    if (department !== undefined) updateData.department = department ? sanitizeString(department, 100) : null;
+
+    if (avatar !== undefined) {
+      if (avatar && isValidImageUrl(avatar)) {
+        updateData.avatar = avatar;
+      } else if (!avatar) {
+        updateData.avatar = null;
+      }
+    }
+
+    if (ktmImage !== undefined) {
+      if (ktmImage && isValidImageUrl(ktmImage)) {
+        updateData.ktmImage = ktmImage;
+      } else if (!ktmImage) {
+        updateData.ktmImage = null;
+      }
+    }
 
     // Password change is temporarily disabled in demo mode
     if (newPassword) {

@@ -4,18 +4,21 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting database seeding...');
+  console.log('🛡️  Starting fresh database wipe and rebuild...');
 
-  // Clean existing data
+  // 1. Clean existing data in correct relational order
   await prisma.loanTransaction.deleteMany();
   await prisma.roomBooking.deleteMany();
   await prisma.equipment.deleteMany();
   await prisma.user.deleteMany();
 
+  console.log('🧹 Old data cleared.');
+
+  // 2. Hash passwords with bcrypt
   const hashedPasswordAdmin = await bcrypt.hash('admin123', 10);
   const hashedPasswordStudent = await bcrypt.hash('student123', 10);
 
-  // 1. Create Users
+  // 3. Create Admin & Student Users
   const admin = await prisma.user.create({
     data: {
       name: 'Dr. Ir. Budi Santoso, M.Kom.',
@@ -55,9 +58,35 @@ async function main() {
     },
   });
 
+  const student3 = await prisma.user.create({
+    data: {
+      name: 'Bima Arya Wicaksono',
+      email: 'bima@campus.ac.id',
+      password: hashedPasswordStudent,
+      role: 'STUDENT',
+      nim: '21051204012',
+      department: 'S1 Teknik Elektro',
+      phone: '082155667788',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    },
+  });
+
+  const student4 = await prisma.user.create({
+    data: {
+      name: 'Nadia Larasati',
+      email: 'nadia@campus.ac.id',
+      password: hashedPasswordStudent,
+      role: 'STUDENT',
+      nim: '21051204099',
+      department: 'D4 Teknologi Rekayasa Multimedia',
+      phone: '087811223344',
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    },
+  });
+
   console.log('✅ Users created.');
 
-  // 2. Create Equipment Inventory
+  // 4. Create Equipment Inventory
   const equipmentList = [
     {
       name: 'Digital Storage Oscilloscope 100MHz 2CH (Rigol DS1102Z-E)',
@@ -169,6 +198,28 @@ async function main() {
       location: 'Lab Elektronika - Rak Solder',
       imageUrl: 'https://images.unsplash.com/photo-1581092162384-8987c1d64718?w=600&auto=format&fit=crop&q=80',
     },
+    {
+      name: 'Logic Analyzer 24MHz 8-Channel USB',
+      code: 'EQ-LOG-011',
+      category: 'Electronics & IoT',
+      description: 'Penganalisis logika digital 8-channel USB kompatibel dengan protokol I2C, SPI, UART, dan CAN bus untuk debugging komunikasi mikrokontroler.',
+      totalQuantity: 10,
+      availableQuantity: 10,
+      condition: 'GOOD',
+      location: 'Lab IoT - Rak C2',
+      imageUrl: 'https://images.unsplash.com/photo-1517420704952-d9f39e95b43e?w=600&auto=format&fit=crop&q=80',
+    },
+    {
+      name: 'Sony Alpha A7 IV Mirrorless Camera Body + 28-70mm Lens',
+      code: 'EQ-CAM-012',
+      category: 'Multimedia & VR',
+      description: 'Kamera full-frame 33MP untuk pembuatan konten laboratorium, dokumentasi riset video 4K 60p, dan studio multimedia kampus.',
+      totalQuantity: 2,
+      availableQuantity: 2,
+      condition: 'GOOD',
+      location: 'Lab Multimedia - Dry Box Kamera',
+      imageUrl: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80',
+    },
   ];
 
   const createdEquipment = [];
@@ -179,11 +230,13 @@ async function main() {
 
   console.log(`✅ ${createdEquipment.length} Equipment items seeded.`);
 
-  // 3. Create Sample Loan Transactions
+  // 5. Create Sample Loan Transactions
   const now = new Date();
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const pastThreeDays = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
   const yesterday = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
+  const lastMonth = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const lastMonthReturn = new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000);
 
   // Loan 1: PENDING
   await prisma.loanTransaction.create({
@@ -212,7 +265,21 @@ async function main() {
     },
   });
 
-  // Loan 3: RETURNED
+  // Loan 3: APPROVED (Active)
+  await prisma.loanTransaction.create({
+    data: {
+      userId: student3.id,
+      equipmentId: createdEquipment[3].id, // 3D Printer
+      quantity: 1,
+      requestDate: pastThreeDays,
+      returnDate: nextWeek,
+      status: 'APPROVED',
+      purpose: 'Fabrikasi casing robot otonom untuk kompetisi robotika nasional.',
+      adminNote: 'Disetujui. Penggunaan bahan filamen PLA dicatat terpisah.',
+    },
+  });
+
+  // Loan 4: RETURNED
   await prisma.loanTransaction.create({
     data: {
       userId: student2.id,
@@ -227,7 +294,22 @@ async function main() {
     },
   });
 
-  // Loan 4: REJECTED
+  // Loan 5: RETURNED
+  await prisma.loanTransaction.create({
+    data: {
+      userId: student4.id,
+      equipmentId: createdEquipment[4].id, // VR Headset
+      quantity: 1,
+      requestDate: lastMonth,
+      returnDate: lastMonthReturn,
+      actualReturnDate: lastMonthReturn,
+      status: 'RETURNED',
+      purpose: 'Pengujian User Experience game edukasi berbasis VR untuk mahasiswa.',
+      adminNote: 'Disetujui dan telah dikembalikan tepat waktu.',
+    },
+  });
+
+  // Loan 6: REJECTED
   await prisma.loanTransaction.create({
     data: {
       userId: student2.id,
@@ -243,7 +325,7 @@ async function main() {
 
   console.log('✅ Loan transactions seeded.');
 
-  // 4. Create Sample Room Bookings
+  // 6. Create Sample Room Bookings
   const todayMorning = new Date();
   todayMorning.setHours(9, 0, 0, 0);
   const todayNoon = new Date();
@@ -282,6 +364,18 @@ async function main() {
     },
   });
 
+  await prisma.roomBooking.create({
+    data: {
+      userId: student3.id,
+      roomName: 'Lab Robotika & Mekatronika (Gedung A Lt. 2)',
+      startTime: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000),
+      endTime: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000),
+      purpose: 'Uji lintasan robot line follower dan kalibrasi sensor PID.',
+      status: 'APPROVED',
+      adminNote: 'Disetujui. Harap merapikan arena uji setelah selesai.',
+    },
+  });
+
   // Maintenance block by Admin
   await prisma.roomBooking.create({
     data: {
@@ -297,7 +391,7 @@ async function main() {
   });
 
   console.log('✅ Room bookings seeded.');
-  console.log('🎉 Seeding successfully finished!');
+  console.log('🎉 Database rebuild & seeding successfully completed!');
 }
 
 main()

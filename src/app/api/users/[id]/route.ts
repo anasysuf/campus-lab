@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { isValidImageUrl, isValidRole, sanitizeString } from '@/lib/security';
 
 // GET /api/users/[id] - Get details of single user including loan and booking history
 export async function GET(
@@ -68,18 +68,20 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { name, role, nim, department, phone, avatar, ktmImage, newPassword } = body;
+    const { name, role, nim, department, phone, avatar, ktmImage } = body;
 
     const data: any = {};
-    if (name !== undefined) data.name = name;
-    if (role !== undefined) data.role = role;
-    if (nim !== undefined) data.nim = nim;
-    if (department !== undefined) data.department = department;
-    if (phone !== undefined) data.phone = phone;
-    if (avatar !== undefined) data.avatar = avatar;
-    if (ktmImage !== undefined) data.ktmImage = ktmImage;
-
-    // Note: newPassword update is disabled in demo mode
+    if (name !== undefined) data.name = sanitizeString(name, 100);
+    if (role !== undefined && isValidRole(role)) data.role = role;
+    if (nim !== undefined) data.nim = nim ? sanitizeString(nim, 30) : null;
+    if (department !== undefined) data.department = department ? sanitizeString(department, 100) : null;
+    if (phone !== undefined) data.phone = phone ? sanitizeString(phone, 25) : null;
+    if (avatar !== undefined) {
+      data.avatar = avatar && isValidImageUrl(avatar) ? avatar : null;
+    }
+    if (ktmImage !== undefined) {
+      data.ktmImage = ktmImage && isValidImageUrl(ktmImage) ? ktmImage : null;
+    }
 
     const updatedUser = await prisma.user.update({
       where: { id: params.id },

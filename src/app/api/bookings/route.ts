@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, getClientIp, sanitizeString } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,7 @@ export async function GET(request: Request) {
     }
 
     if (roomName && roomName !== 'ALL') {
-      where.roomName = { contains: roomName, mode: 'insensitive' };
+      where.roomName = { contains: sanitizeString(roomName, 100), mode: 'insensitive' };
     }
 
     if (status && status !== 'ALL') {
@@ -36,10 +37,12 @@ export async function GET(request: Request) {
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
 
-      where.startTime = {
-        gte: startOfDay,
-        lte: endOfDay,
-      };
+      if (!isNaN(startOfDay.getTime()) && !isNaN(endOfDay.getTime())) {
+        where.startTime = {
+          gte: startOfDay,
+          lte: endOfDay,
+        };
+      }
     }
 
     const bookings = await prisma.roomBooking.findMany({
@@ -76,6 +79,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Silakan login.' }, { status: 401 });
     }
 
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`booking_${session.user.id}_${ip}`, 20, 60000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Terlalu banyak permintaan reservasi ruangan. Silakan tunggu sebentar.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { roomName, startTime, endTime, purpose, isMaintenance = false } = body;
 
@@ -85,6 +97,9 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const cleanRoomName = sanitizeString(roomName, 100);
+    const cleanPurpose = sanitizeString(purpose, 500);
 
     const start = new Date(startTime);
     const end = new Date(endTime);
@@ -100,7 +115,7 @@ export async function POST(request: Request) {
     // Check for overlapping APPROVED bookings for the same room
     const conflict = await prisma.roomBooking.findFirst({
       where: {
-        roomName,
+        roomName: cleanRoomName,
         status: 'APPROVED',
         OR: [
           {
@@ -122,7 +137,7 @@ export async function POST(request: Request) {
     if (conflict) {
       return NextResponse.json(
         {
-          error: `Ruangan "${roomName}" sudah dipesan pada rentang waktu tersebut (${new Date(conflict.startTime).toLocaleTimeString('id-ID')} - ${new Date(conflict.endTime).toLocaleTimeString('id-ID')}).`,
+          error: `Ruangan "${cleanRoomName}" sudah dipesan pada rentang waktu tersebut (${new Date(conflict.startTime).toLocaleTimeString('id-ID')} - ${new Date(conflict.endTime).toLocaleTimeString('id-ID')}).`,
         },
         { status: 409 }
       );
@@ -133,10 +148,10 @@ export async function POST(request: Request) {
     const newBooking = await prisma.roomBooking.create({
       data: {
         userId: session.user.id,
-        roomName,
+        roomName: cleanRoomName,
         startTime: start,
         endTime: end,
-        purpose: purpose.trim(),
+        purpose: cleanPurpose,
         isMaintenance: isAdmin ? Boolean(isMaintenance) : false,
         // Admins creating maintenance or booking are automatically approved
         status: isAdmin ? 'APPROVED' : 'PENDING',

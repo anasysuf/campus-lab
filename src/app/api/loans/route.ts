@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit, getClientIp, sanitizeString } from '@/lib/security';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
-    const search = searchParams.get('search');
+    const search = sanitizeString(searchParams.get('search') || '', 100);
 
     const where: any = {};
 
@@ -83,6 +84,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Silakan login terlebih dahulu.' }, { status: 401 });
     }
 
+    const ip = getClientIp(request);
+    const rateLimit = checkRateLimit(`loan_${session.user.id}_${ip}`, 15, 60000);
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Terlalu banyak permintaan peminjaman. Silakan tunggu sebentar.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { equipmentId, quantity = 1, requestDate, returnDate, purpose } = body;
 
@@ -94,8 +104,13 @@ export async function POST(request: Request) {
     }
 
     const reqQty = parseInt(quantity, 10);
-    if (isNaN(reqQty) || reqQty < 1) {
-      return NextResponse.json({ error: 'Jumlah peminjaman minimal 1 unit.' }, { status: 400 });
+    if (isNaN(reqQty) || reqQty < 1 || reqQty > 50) {
+      return NextResponse.json({ error: 'Jumlah peminjaman tidak valid (minimal 1, maksimal 50).' }, { status: 400 });
+    }
+
+    const cleanPurpose = sanitizeString(purpose, 500);
+    if (cleanPurpose.length < 5) {
+      return NextResponse.json({ error: 'Tujuan peminjaman minimal harus 5 karakter.' }, { status: 400 });
     }
 
     const equipment = await prisma.equipment.findUnique({
@@ -116,9 +131,22 @@ export async function POST(request: Request) {
     const startDate = requestDate ? new Date(requestDate) : new Date();
     const endDate = new Date(returnDate);
 
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return NextResponse.json({ error: 'Format tanggal tidak valid.' }, { status: 400 });
+    }
+
     if (endDate <= startDate) {
       return NextResponse.json(
         { error: 'Tanggal pengembalian harus setelah tanggal mulai peminjaman.' },
+        { status: 400 }
+      );
+    }
+
+    // Limit maximum loan period to 30 days
+    const maxLoanDuration = 30 * 24 * 60 * 60 * 1000;
+    if (endDate.getTime() - startDate.getTime() > maxLoanDuration) {
+      return NextResponse.json(
+        { error: 'Durasi maksimal peminjaman laboratorium adalah 30 hari.' },
         { status: 400 }
       );
     }
@@ -130,7 +158,7 @@ export async function POST(request: Request) {
         quantity: reqQty,
         requestDate: startDate,
         returnDate: endDate,
-        purpose: purpose.trim(),
+        purpose: cleanPurpose,
         status: 'PENDING',
       },
       include: {
